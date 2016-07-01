@@ -1,0 +1,30 @@
+{
+  "name": "worona-deps",
+  "version": "1.0.0",
+  "description": "Worona package to manage dependencies",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "ava --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/worona/worona-deps.git"
+  },
+  "keywords": [
+    "worona",
+    "package",
+    "dependencies"
+  ],
+  "author": "Worona Labs SL | Luis Herranz, @luisherranz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/worona/worona-deps/issues"
+  },
+  "homepage": "https://github.com/worona/worona-deps#readme",
+  "dependencies": {
+    "lodash": "^4.13.1"
+  },
+  "devDependencies": {
+    "ava": "^0.15.2"
+  }
+}
