@@ -47,4 +47,7 @@ module.exports = {
   default: worona,
   worona: worona,
   Worona: Worona,
+  addPackage: worona.addPackage.bind(worona),
+  getReducers: worona.getReducers.bind(worona),
+  dep: worona.dep.bind(worona),
 };
