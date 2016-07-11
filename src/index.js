@@ -19,6 +19,10 @@ Worona.prototype.getReducers = function() {
   });
 }
 
+Worona.prototype.getSagas = function(pkgName) {
+  return this._packages[pkgName].sagas.default;
+}
+
 var checkPackage = function(pkgName, obj) {
   if (typeof pkgName === 'undefined')
     throw new Error('Dependecy failed. You have to specify at least package name');
@@ -70,5 +74,6 @@ module.exports = {
   Worona: Worona,
   addPackage: worona.addPackage.bind(worona),
   getReducers: worona.getReducers.bind(worona),
+  getSagas: worona.getSagas.bind(worona),
   dep: worona.dep.bind(worona),
 };
