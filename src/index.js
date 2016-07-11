@@ -20,7 +20,12 @@ Worona.prototype.getReducers = function() {
 }
 
 Worona.prototype.getSagas = function(pkgName) {
-  return this._packages[pkgName].sagas.default;
+  if ((typeof this._packages[pkgName] !== 'undefined') &&
+  (typeof this._packages[pkgName].sagas !== 'undefined') &&
+  (typeof this._packages[pkgName].sagas.default !== 'undefined')) {
+    return this._packages[pkgName].sagas.default;
+  }
+  return false;
 }
 
 var checkPackage = function(pkgName, obj) {

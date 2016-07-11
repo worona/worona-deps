@@ -85,6 +85,20 @@ test('Throw dependency level 3, package', function(t) {
   t.throws(function() { worona.dep('pkg', 'actions', 'something') });
 });
 
+test('Get sagas, no sagas', function(t) {
+  debugger;
+  var pkg = {};
+  worona.addPackage('pkg', pkg);
+  t.false(worona.getSagas('pkg'));
+})
+
+test('Get sagas, no default', function(t) {
+  debugger;
+  var pkg = { sagas: {} };
+  worona.addPackage('pkg', pkg);
+  t.false(worona.getSagas('pkg'));
+})
+
 test('Get sagas', function(t) {
   debugger;
   var pkg = { sagas: { default: {} } };
