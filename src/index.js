@@ -12,7 +12,7 @@ Worona.prototype.addPackage = function(name, pkg) {
 Worona.prototype.getReducers = function() {
   var reducers = mapValues(this._packages, function(pkg) {
     if (pkg.reducers && pkg.reducers.default)
-      return pkg.reducers.default
+      return pkg.reducers.default();
   });
   return omitBy(reducers, function(reducer) {
     return !reducer;

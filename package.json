@@ -1,6 +1,6 @@
 {
   "name": "worona-deps",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "Worona package to manage dependencies",
   "main": "src/index.js",
   "scripts": {
