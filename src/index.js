@@ -21,13 +21,11 @@ Worona.prototype.getReducers = function() {
 }
 
 Worona.prototype.getLocales = function(lang) {
-  var locales = map(this._packages, function(pkg) {
+  return map(this._packages, function(pkg) {
     if (pkg.locales)
       return pkg.locales(lang);
-  });
-  return omitBy(locales, function(locale) {
-    return !locale;
-  });
+  })
+  .filter(function(locale) { return !!locale; });
 }
 
 Worona.prototype.getSagas = function(pkgName) {
@@ -90,6 +88,7 @@ module.exports = {
   Worona: Worona,
   addPackage: worona.addPackage.bind(worona),
   getReducers: worona.getReducers.bind(worona),
+  getLocales: worona.getLocales.bind(worona),
   getSagas: worona.getSagas.bind(worona),
   dep: worona.dep.bind(worona),
 };

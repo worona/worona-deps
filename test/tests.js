@@ -39,6 +39,10 @@ test('Get reducers. Packages without reducers', function(t) {
   t.deepEqual(worona.getReducers(), { pkg1: 1 });
 });
 
+test('Get locales. Empty locales', function(t) {
+  t.deepEqual(worona.getLocales('test'), []);
+});
+
 test('Get locales', function(t) {
   var pkg1 = { locales: function(lang) { return lang; } };
   var pkg2 = { locales: function(lang) { return lang; } };
