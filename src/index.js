@@ -20,12 +20,17 @@ Worona.prototype.getReducers = function() {
   });
 }
 
-Worona.prototype.getLocales = function(lang) {
+Worona.prototype.getLocales = function(lng) {
   return map(this._packages, function(pkg) {
     if (pkg.locales)
-      return pkg.locales(lang);
+      return pkg.locales(lng);
   })
   .filter(function(locale) { return !!locale; });
+}
+
+Worona.prototype.getLocale = function(ns, lng) {
+  return this._packages[ns] && typeof this._packages[ns].locales === 'function' ?
+    this._packages[ns].locales(lng) : null;
 }
 
 Worona.prototype.getSagas = function(pkgName) {
@@ -89,6 +94,7 @@ module.exports = {
   addPackage: worona.addPackage.bind(worona),
   getReducers: worona.getReducers.bind(worona),
   getLocales: worona.getLocales.bind(worona),
+  getLocale: worona.getLocale.bind(worona),
   getSagas: worona.getSagas.bind(worona),
   dep: worona.dep.bind(worona),
 };

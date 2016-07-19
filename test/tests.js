@@ -61,6 +61,21 @@ test('Get locales. Packages without locales', function(t) {
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
 });
 
+test('Get locale', function(t) {
+  var pkg1 = { locales: function(lang) { return lang; } };
+  var pkg2 = { locales: function(lang) { return lang; } };
+  worona.addPackage('pkg1', pkg1);
+  t.deepEqual(worona.getLocale('pkg1', 'test'), pkg1.locales('test'));
+  worona.addPackage('pkg2', pkg2);
+  t.deepEqual(worona.getLocale('pkg2', 'test'), pkg2.locales('test'));
+});
+
+test('Get locale, non existant', function(t) {
+  var pkg1 = {};
+  worona.addPackage('pkg1', pkg1);
+  t.deepEqual(worona.getLocale('pkg1', 'test'), null);
+});
+
 test('Get dependency level 1', function(t) {
   var pkg = { actions: { something: 1 } };
   worona.addPackage('pkg', pkg);
