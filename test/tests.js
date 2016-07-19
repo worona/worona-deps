@@ -39,6 +39,24 @@ test('Get reducers. Packages without reducers', function(t) {
   t.deepEqual(worona.getReducers(), { pkg1: 1 });
 });
 
+test('Get locales', function(t) {
+  var pkg1 = { locales: function(lang) { return lang; } };
+  var pkg2 = { locales: function(lang) { return lang; } };
+  worona.addPackage('pkg1', pkg1);
+  t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
+  worona.addPackage('pkg2', pkg2);
+  t.deepEqual(worona.getLocales('test'), [pkg1.locales('test'), pkg2.locales('test')]);
+});
+
+test('Get locales. Packages without locales', function(t) {
+  var pkg1 = { locales: function(lang) { return lang; } };
+  var pkg2 = {};
+  worona.addPackage('pkg1', pkg1);
+  t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
+  worona.addPackage('pkg2', pkg2);
+  t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
+});
+
 test('Get dependency level 1', function(t) {
   var pkg = { actions: { something: 1 } };
   worona.addPackage('pkg', pkg);

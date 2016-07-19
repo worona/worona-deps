@@ -1,5 +1,6 @@
 var mapValues = require('lodash/mapValues');
 var omitBy = require('lodash/omitBy');
+var map = require('lodash/map');
 
 var Worona = function() {
   this._packages = {};
@@ -16,6 +17,16 @@ Worona.prototype.getReducers = function() {
   });
   return omitBy(reducers, function(reducer) {
     return !reducer;
+  });
+}
+
+Worona.prototype.getLocales = function(lang) {
+  var locales = map(this._packages, function(pkg) {
+    if (pkg.locales)
+      return pkg.locales(lang);
+  });
+  return omitBy(locales, function(locale) {
+    return !locale;
   });
 }
 
