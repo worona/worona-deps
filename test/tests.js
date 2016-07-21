@@ -123,22 +123,38 @@ test('Throw dependency level 3, package', function(t) {
 });
 
 test('Get sagas, no sagas', function(t) {
-  debugger;
   var pkg = {};
   worona.addPackage('pkg', pkg);
   t.false(worona.getSagas('pkg'));
 })
 
 test('Get sagas, no default', function(t) {
-  debugger;
   var pkg = { sagas: {} };
   worona.addPackage('pkg', pkg);
   t.false(worona.getSagas('pkg'));
 })
 
 test('Get sagas', function(t) {
-  debugger;
   var pkg = { sagas: { default: {} } };
   worona.addPackage('pkg', pkg);
   t.is(worona.getSagas('pkg'), pkg.sagas.default);
 })
+
+test('Mock dep object', function(t) {
+  var deps = {
+    libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+    types: {
+      get TYPE() { return worona.dep('other', 'fake', 'dep'); },
+      get TYPE2() { return worona.dep('other', 'fake', 'dep2'); },
+    },
+  };
+  var mockedDeps = worona.mock(deps);
+
+  t.throws(function() { deps.libs.somelib });
+  t.throws(function() { deps.libs.somelib });
+  t.throws(function() { deps.libs.somelib });
+
+  t.notThrows(function() { mockedDeps.libs.somelib });
+  t.notThrows(function() { mockedDeps.libs.somelib });
+  t.notThrows(function() { mockedDeps.libs.somelib });
+});

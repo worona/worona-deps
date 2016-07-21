@@ -83,6 +83,17 @@ Worona.prototype.dep = function() {
   return nextDep(pkgName, this._packages[pkgName], propName, nextArgs);
 }
 
+Worona.prototype.mock = function(deps) {
+  var mockedDeps = {};
+  for (var sub in deps) {
+    mockedDeps[sub] = {};
+    for (var subsub in deps[sub]) {
+      mockedDeps[sub][subsub] = function(){};
+    }
+  }
+  return mockedDeps;
+}
+
 var worona = new Worona();
 
 if (typeof window !== 'undefined') window.worona = worona;
@@ -97,4 +108,5 @@ module.exports = {
   getLocale: worona.getLocale.bind(worona),
   getSagas: worona.getSagas.bind(worona),
   dep: worona.dep.bind(worona),
+  mock: worona.mock,
 };
