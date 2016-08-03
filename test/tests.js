@@ -148,13 +148,14 @@ test('Mock dep object', function(t) {
       get TYPE2() { return worona.dep('other', 'fake', 'dep2'); },
     },
   };
-  var mockedDeps = worona.mock(deps);
 
   t.throws(function() { deps.libs.somelib });
   t.throws(function() { deps.libs.somelib });
   t.throws(function() { deps.libs.somelib });
 
-  t.notThrows(function() { mockedDeps.libs.somelib });
-  t.notThrows(function() { mockedDeps.libs.somelib });
-  t.notThrows(function() { mockedDeps.libs.somelib });
+  worona.mock(deps);
+
+  t.notThrows(function() { deps.libs.somelib });
+  t.notThrows(function() { deps.libs.somelib });
+  t.notThrows(function() { deps.libs.somelib });
 });

@@ -90,13 +90,14 @@ Worona.prototype.mock = function(deps) {
     for (var subsub in deps[sub]) {
       mockedDeps[sub][subsub] = function(){};
     }
+    deps[sub] = mockedDeps[sub];
   }
-  return mockedDeps;
+  return deps;
 }
 
 var worona = new Worona();
 
-if (typeof window !== 'undefined') window.worona = worona;
+if (typeof window !== 'undefined') window.woronaDeps = worona;
 
 module.exports = {
   default: worona,
