@@ -2,8 +2,27 @@ var mapValues = require('lodash/mapValues');
 var omitBy = require('lodash/omitBy');
 var map = require('lodash/map');
 
+function checkWindow(variable) {
+  if (typeof window !== 'undefined')
+    return !!window[variable];
+  return false;
+}
+
+function checkWorona(variable) {
+  if (typeof window !== 'undefined' && typeof window.__worona__ !== 'undefined')
+    return !!window.__worona__[variable];
+  return false;
+}
+
 var Worona = function() {
   this._packages = {};
+  this.isTest = typeof window === 'undefined';
+  this.isDev = !checkWorona('prod');
+  this.isProd = checkWorona('prod');
+  this.isLocal = !checkWorona('remote');
+  this.isRemote = checkWorona('remote');
+  this.isWeb = !checkWindow('cordova');
+  this.isCordova = checkWindow('cordova');
 }
 
 Worona.prototype.addPackage = function(name, pkg) {
@@ -97,7 +116,7 @@ Worona.prototype.mock = function(deps) {
 
 var worona = new Worona();
 
-if (typeof window !== 'undefined') window.woronaDeps = worona;
+if (typeof window !== 'undefined') window.worona = worona;
 
 module.exports = {
   default: worona,
@@ -110,4 +129,11 @@ module.exports = {
   getSagas: worona.getSagas.bind(worona),
   dep: worona.dep.bind(worona),
   mock: worona.mock,
+  isTest: worona.isTest,
+  isDev: worona.isDev,
+  isProd: worona.isProd,
+  isLocal: worona.isLocal,
+  isRemote: worona.isRemote,
+  isWeb: worona.isWeb,
+  isCordova: worona.isCordova,
 };

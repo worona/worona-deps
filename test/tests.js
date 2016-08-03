@@ -7,6 +7,10 @@ test.beforeEach(function() {
   worona = new Worona();
 });
 
+test.afterEach(function() {
+  delete global.window;
+});
+
 test('Add package', function(t) {
   var pkg = { some: 'content' };
   worona.addPackage('pkg', pkg);
@@ -158,4 +162,57 @@ test('Mock dep object', function(t) {
   t.notThrows(function() { deps.libs.somelib });
   t.notThrows(function() { deps.libs.somelib });
   t.notThrows(function() { deps.libs.somelib });
+});
+
+test('isTest', function(t) {
+  t.true(worona.isTest);
+  global.window = {}; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isTest.
+  t.false(otherWorona.isTest);
+});
+
+test('isTest should be true again in the next tests', function(t) {
+  t.true(worona.isTest);
+});
+
+test('isDev', function(t) {
+  t.true(worona.isDev); // True by default
+  global.window = { __worona__: { prod: true } }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isDev.
+  t.false(otherWorona.isDev);
+});
+
+test('isProd', function(t) {
+  t.false(worona.isProd); // False by default
+  global.window = { __worona__: { prod: true } }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isProd.
+  t.true(otherWorona.isProd);
+});
+
+test('isLocal', function(t) {
+  t.true(worona.isLocal); // True by default
+  global.window = { __worona__: { remote: true } }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isLocal.
+  t.false(otherWorona.isLocal);
+});
+
+test('isRemote', function(t) {
+  t.false(worona.isRemote); // False by default
+  global.window = { __worona__: { remote: true } }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isRemote.
+  t.true(otherWorona.isRemote);
+});
+
+test('isWeb', function(t) {
+  t.true(worona.isWeb); // True by default
+  global.window = { cordova: {} }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isWeb.
+  t.false(otherWorona.isWeb);
+});
+
+test('isCordova', function(t) {
+  t.false(worona.isCordova); // False by default
+  global.window = { cordova: {} }; // Add window to simulate the browser.
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isCordova.
+  t.true(otherWorona.isCordova);
 });
