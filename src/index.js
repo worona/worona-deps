@@ -2,7 +2,7 @@ var mapValues = require('lodash/mapValues');
 var omitBy = require('lodash/omitBy');
 var map = require('lodash/map');
 
-function checkWindow(variable) {
+function checkGlobal(variable) {
   if (typeof window !== 'undefined')
     return !!window[variable];
   return false;
@@ -21,8 +21,8 @@ var Worona = function() {
   this.isProd = checkWorona('prod');
   this.isLocal = !checkWorona('remote');
   this.isRemote = checkWorona('remote');
-  this.isWeb = !checkWindow('cordova');
-  this.isCordova = checkWindow('cordova');
+  this.isWeb = !checkGlobal('cordova');
+  this.isCordova = checkGlobal('cordova');
 }
 
 Worona.prototype.addPackage = function(name, pkg) {
