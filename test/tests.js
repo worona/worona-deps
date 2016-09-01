@@ -34,18 +34,18 @@ test('Get reducers', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', reducers: { someRed: 22, default: () => 2 } };
   worona.addPackage(pkg1);
-  t.is(worona.getReducers('pkg1'), 1);
+  t.is(worona.getReducers('pkg1-ext'), 1);
   worona.addPackage(pkg2);
-  t.is(worona.getReducers('pkg2'), 2);
+  t.is(worona.getReducers('pkg2-ext'), 2);
 });
 
 test('Get reducers. Packages without reducers', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
   worona.addPackage(pkg1);
-  t.is(worona.getReducers('pkg1'), 1);
+  t.is(worona.getReducers('pkg1-ext'), 1);
   worona.addPackage(pkg2);
-  t.is(worona.getReducers('pkg2'), null);
+  t.is(worona.getReducers('pkg2-ext'), null);
 });
 
 test('Get locales. Empty locales', function(t) {
@@ -74,21 +74,31 @@ test('Get locale', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
   worona.addPackage(pkg1);
-  t.deepEqual(worona.getLocale('pkg1', 'test'), pkg1.locales('test'));
+  t.deepEqual(worona.getLocale('pkg1-ext', 'test'), pkg1.locales('test'));
   worona.addPackage(pkg2);
-  t.deepEqual(worona.getLocale('pkg2', 'test'), pkg2.locales('test'));
+  t.deepEqual(worona.getLocale('pkg2-ext', 'test'), pkg2.locales('test'));
 });
 
 test('Get locale, non existant', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
   worona.addPackage(pkg1);
-  t.deepEqual(worona.getLocale('pkg1', 'test'), null);
+  t.deepEqual(worona.getLocale('pkg1-ext', 'test'), null);
 });
 
 test('Get dependency level 1', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
   worona.addPackage(pkg);
   t.is(worona.dep('pkg', 'actions'), pkg.actions);
+});
+
+test('Get dependency with replacement level 1', function(t) {
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', actions: { something: 1 } };
+  worona.addPackage(pkg1);
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg', actions: { something: 1 } };
+  worona.addPackage(pkg2);
+  t.is(worona.dep('pkg', 'actions'), pkg1.actions);
+  worona.activatePackage('pkg2-ext');
+  t.is(worona.dep('pkg', 'actions'), pkg2.actions);
 });
 
 test('Get dependency level 2', function(t) {
@@ -134,19 +144,19 @@ test('Throw dependency level 3, package', function(t) {
 test('Get sagas, no sagas', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
   worona.addPackage(pkg);
-  t.false(worona.getSagas('pkg'));
+  t.false(worona.getSagas('pkg-ext'));
 })
 
 test('Get sagas, no default', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: {} };
   worona.addPackage(pkg);
-  t.false(worona.getSagas('pkg'));
+  t.false(worona.getSagas('pkg-ext'));
 })
 
 test('Get sagas', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: { default: {} } };
   worona.addPackage(pkg);
-  t.is(worona.getSagas('pkg'), pkg.sagas.default);
+  t.is(worona.getSagas('pkg-ext'), pkg.sagas.default);
 })
 
 test('Mock dep object', function(t) {
