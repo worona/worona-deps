@@ -231,3 +231,8 @@ test('isCordova', function(t) {
   var otherWorona = new Worona(); // Create a new worona to reevaluate isCordova.
   t.true(otherWorona.isCordova);
 });
+
+test('waitForDep', function(t) {
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  return worona.waitForDep('pkg').then(....)
+});
