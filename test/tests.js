@@ -12,34 +12,39 @@ test.afterEach(function() {
 });
 
 test('Add package', function(t) {
-  var pkg = { some: 'content' };
-  worona.addPackage('pkg', pkg);
-  t.deepEqual(worona._packages.pkg, pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', some: 'content' };
+  worona.addPackage(pkg);
+  t.deepEqual(worona._downloaded['pkg-ext'], pkg);
+  t.deepEqual(worona._deps['pkg'], pkg);
 });
 
 test('Replace package', function(t) {
-  var pkg1 = { some: 'content' };
-  worona.addPackage('pkg', pkg1);
-  var pkg2 = { other: 'content' };
-  worona.addPackage('pkg', pkg2);
-  t.is(worona._packages.pkg, pkg2);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', some: 'content' };
+  worona.addPackage(pkg1);
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg', some: 'content' };
+  worona.addPackage(pkg2);
+  t.is(worona._downloaded['pkg1-ext'], pkg1);
+  t.is(worona._downloaded['pkg2-ext'], pkg2);
+  t.is(worona._deps['pkg'], pkg1);
+  worona.activatePackage('pkg2-ext');
+  t.is(worona._deps['pkg'], pkg2);
 });
 
 test('Get reducers', function(t) {
-  var pkg1 = { reducers: { someRed: 11, default: () => 1 }};
-  var pkg2 = { reducers: { someRed: 22, default: () => 2 }};
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', reducers: { someRed: 22, default: () => 2 } };
+  worona.addPackage(pkg1);
   t.is(worona.getReducers('pkg1'), 1);
-  worona.addPackage('pkg2', pkg2);
+  worona.addPackage(pkg2);
   t.is(worona.getReducers('pkg2'), 2);
 });
 
 test('Get reducers. Packages without reducers', function(t) {
-  var pkg1 = { reducers: { someRed: 11, default: () => 1 }};
-  var pkg2 = {};
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
+  worona.addPackage(pkg1);
   t.is(worona.getReducers('pkg1'), 1);
-  worona.addPackage('pkg2', pkg2);
+  worona.addPackage(pkg2);
   t.is(worona.getReducers('pkg2'), null);
 });
 
@@ -48,53 +53,53 @@ test('Get locales. Empty locales', function(t) {
 });
 
 test('Get locales', function(t) {
-  var pkg1 = { locales: function(lang) { return lang; } };
-  var pkg2 = { locales: function(lang) { return lang; } };
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
+  worona.addPackage(pkg1);
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
-  worona.addPackage('pkg2', pkg2);
+  worona.addPackage(pkg2);
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test'), pkg2.locales('test')]);
 });
 
 test('Get locales. Packages without locales', function(t) {
-  var pkg1 = { locales: function(lang) { return lang; } };
-  var pkg2 = {};
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
+  worona.addPackage(pkg1);
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
-  worona.addPackage('pkg2', pkg2);
+  worona.addPackage(pkg2);
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
 });
 
 test('Get locale', function(t) {
-  var pkg1 = { locales: function(lang) { return lang; } };
-  var pkg2 = { locales: function(lang) { return lang; } };
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
+  worona.addPackage(pkg1);
   t.deepEqual(worona.getLocale('pkg1', 'test'), pkg1.locales('test'));
-  worona.addPackage('pkg2', pkg2);
+  worona.addPackage(pkg2);
   t.deepEqual(worona.getLocale('pkg2', 'test'), pkg2.locales('test'));
 });
 
 test('Get locale, non existant', function(t) {
-  var pkg1 = {};
-  worona.addPackage('pkg1', pkg1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
+  worona.addPackage(pkg1);
   t.deepEqual(worona.getLocale('pkg1', 'test'), null);
 });
 
 test('Get dependency level 1', function(t) {
-  var pkg = { actions: { something: 1 } };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
+  worona.addPackage(pkg);
   t.is(worona.dep('pkg', 'actions'), pkg.actions);
 });
 
 test('Get dependency level 2', function(t) {
-  var pkg = { actions: { something: 1 } };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
+  worona.addPackage(pkg);
   t.is(worona.dep('pkg', 'actions', 'something'), pkg.actions.something);
 });
 
 test('Get dependency level 3', function(t) {
-  var pkg = { actions: { something: { more: 1 } } };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: { more: 1 } } };
+  worona.addPackage(pkg);
   t.is(worona.dep('pkg', 'actions', 'something', 'more'), pkg.actions.something.more);
 });
 
@@ -115,32 +120,32 @@ test('Throw dependency level 3, no package', function(t) {
 });
 
 test('Throw dependency level 2, package', function(t) {
-  var pkg = {};
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  worona.addPackage(pkg);
   t.throws(function() { worona.dep('pkg', 'actions') });
 });
 
 test('Throw dependency level 3, package', function(t) {
-  var pkg = { actions: {} };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: {} };
+  worona.addPackage(pkg);
   t.throws(function() { worona.dep('pkg', 'actions', 'something') });
 });
 
 test('Get sagas, no sagas', function(t) {
-  var pkg = {};
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  worona.addPackage(pkg);
   t.false(worona.getSagas('pkg'));
 })
 
 test('Get sagas, no default', function(t) {
-  var pkg = { sagas: {} };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: {} };
+  worona.addPackage(pkg);
   t.false(worona.getSagas('pkg'));
 })
 
 test('Get sagas', function(t) {
-  var pkg = { sagas: { default: {} } };
-  worona.addPackage('pkg', pkg);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: { default: {} } };
+  worona.addPackage(pkg);
   t.is(worona.getSagas('pkg'), pkg.sagas.default);
 })
 

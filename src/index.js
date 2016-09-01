@@ -1,6 +1,16 @@
-var mapValues = require('lodash/mapValues');
-var omitBy = require('lodash/omitBy');
 var map = require('lodash/map');
+
+var Worona = function() {
+  this._downloaded = {}; // Store the downloaded packages using their names.
+  this._deps = {}; // Store references to the downloaded packages, using their namespaces.
+  this.isTest = typeof window === 'undefined';
+  this.isDev = !checkWorona('prod');
+  this.isProd = checkWorona('prod');
+  this.isLocal = !checkWorona('remote');
+  this.isRemote = checkWorona('remote');
+  this.isWeb = !checkGlobal('cordova');
+  this.isCordova = checkGlobal('cordova');
+}
 
 function checkGlobal(variable) {
   if (typeof window !== 'undefined')
@@ -14,43 +24,47 @@ function checkWorona(variable) {
   return false;
 }
 
-var Worona = function() {
-  this._packages = {};
-  this.isTest = typeof window === 'undefined';
-  this.isDev = !checkWorona('prod');
-  this.isProd = checkWorona('prod');
-  this.isLocal = !checkWorona('remote');
-  this.isRemote = checkWorona('remote');
-  this.isWeb = !checkGlobal('cordova');
-  this.isCordova = checkGlobal('cordova');
-}
-
-Worona.prototype.addPackage = function(name, pkg) {
-  this._packages[name] = pkg;
+// Used to add a downloaded package to the system.
+Worona.prototype.addPackage = function(pkg) {
+  this._downloaded[pkg.name] = pkg;
+  if (!this._deps[pkg.namespace]) this._deps[pkg.namespace] = pkg;
 };
 
-Worona.prototype.getReducers = function(namespace) {
-  return this._packages[namespace].reducers && this._packages[namespace].reducers.default() || null;
+// Used to activate a package to start using it in the dependencies: worona.dep().
+// Please not that if a package is downloaded and no other package with the same namespace is
+// activated yet, it will be available using worona.dep() even if you don't use .activatePackage.
+// This helps solving activation order and circular dependencies.
+Worona.prototype.activatePackage = function(name) {
+  var pkg = this._downloaded[name];
+  this._deps[pkg.namespace] = pkg;
 }
 
+// Used to retrieve the root reducer of a specific namespace.
+Worona.prototype.getReducers = function(namespace) {
+  return this._deps[namespace].reducers && this._deps[namespace].reducers.default() || null;
+}
+
+// Used to retrieve all locales of a specific language.
 Worona.prototype.getLocales = function(lng) {
-  return map(this._packages, function(pkg) {
+  return map(this._deps, function(pkg) {
     if (pkg.locales)
       return pkg.locales(lng);
   })
   .filter(function(locale) { return !!locale; });
 }
 
+// Used to retrieve the locale of a namespace and language.
 Worona.prototype.getLocale = function(namespace, lng) {
-  return this._packages[namespace] && typeof this._packages[namespace].locales === 'function' ?
-    this._packages[namespace].locales(lng) : null;
+  return this._deps[namespace] && typeof this._deps[namespace].locales === 'function' ?
+    this._deps[namespace].locales(lng) : null;
 }
 
+// Used to retrieve the root saga for a namespace.
 Worona.prototype.getSagas = function(namespace) {
-  if ((typeof this._packages[namespace] !== 'undefined') &&
-  (typeof this._packages[namespace].sagas !== 'undefined') &&
-  (typeof this._packages[namespace].sagas.default !== 'undefined')) {
-    return this._packages[namespace].sagas.default;
+  if ((typeof this._deps[namespace] !== 'undefined') &&
+  (typeof this._deps[namespace].sagas !== 'undefined') &&
+  (typeof this._deps[namespace].sagas.default !== 'undefined')) {
+    return this._deps[namespace].sagas.default;
   }
   return false;
 }
@@ -83,19 +97,23 @@ var nextDep = function(namespace, obj, propName, args) {
   return nextDep(namespace + '.' + propName, obj[propName], args[0], nextArgs);
 }
 
+// Used to get a dependency in Worona. Usage is worona.dep('accounts', 'actions', 'login').
+// More examples are in the tests.
 Worona.prototype.dep = function() {
   var args = Array.prototype.slice.call(arguments);
   var namespace = args[0];
   var propName = args[1];
   checkString(namespace);
-  checkPackage(namespace, this._packages);
+  checkPackage(namespace, this._deps);
   if (typeof propName === 'undefined') {
-    return this._packages[namespace];
+    return this._deps[namespace];
   }
   var nextArgs = args.slice(2);
-  return nextDep(namespace, this._packages[namespace], propName, nextArgs);
+  return nextDep(namespace, this._deps[namespace], propName, nextArgs);
 }
 
+// Used to mock a dependency when unit testing modules with dependencies. It is as simple as
+// doing worona.mock(deps).
 Worona.prototype.mock = function(deps) {
   var mockedDeps = {};
   for (var sub in deps) {
