@@ -232,7 +232,51 @@ test('isCordova', function(t) {
   t.true(otherWorona.isCordova);
 });
 
-test('waitForDep', function(t) {
+test('waitForDeps - complete before calling', function(t) {
+  t.plan(1);
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
-  return worona.waitForDep('pkg').then(....)
+  worona.addPackage(pkg);
+  const promise = worona.waitForDeps(['pkg']).then(function(result) {
+    t.true(result);
+  });
+  return promise;
+});
+
+test('waitForDeps - complete after calling', function(t) {
+  t.plan(1);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  const promise = worona.waitForDeps(['pkg']).then(function(result) {
+    t.true(result);
+  });
+  worona.addPackage(pkg);
+  return promise;
+});
+
+test('waitForDeps - complete with before and after', function(t) {
+  t.plan(1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
+  worona.addPackage(pkg1);
+  const promise = worona.waitForDeps(['pkg1', 'pkg2']).then(function(result) {
+    t.true(result);
+  });
+  worona.addPackage(pkg2);
+  return promise;
+});
+
+test('waitForDeps - fail with timeout', function(t) {
+  t.plan(1);
+  const promise = worona.waitForDeps(['pkg'], 1).catch(function(error) {
+    t.true(!!error);
+  });
+  return promise;
+});
+
+test('waitForDeps - don\'t fail with timeout', function(t) {
+  t.plan(1);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  const promise = worona.waitForDeps(['pkg'], 1)
+    .then(function(result) { t.true(result); });
+  worona.addPackage(pkg);
+  return promise;
 });
