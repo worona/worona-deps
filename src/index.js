@@ -90,7 +90,6 @@ Worona.prototype.addPackage = function(pkg) {
 Worona.prototype.activatePackage = function(name) {
   var pkg = this._downloaded[name];
   this._deps[pkg.namespace] = pkg;
-  this._notifyDepSubscribers(pkg.namespace);
 }
 
 // Used to retrieve the root reducer of a specific namespace.
