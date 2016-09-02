@@ -189,6 +189,7 @@ module.exports = {
   worona: worona,
   Worona: Worona,
   addPackage: worona.addPackage.bind(worona),
+  activatePackage: worona.activatePackage.bind(worona),
   getReducers: worona.getReducers.bind(worona),
   getLocales: worona.getLocales.bind(worona),
   getLocale: worona.getLocale.bind(worona),
