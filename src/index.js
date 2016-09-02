@@ -31,7 +31,7 @@ Worona.prototype._addDepSubscriber = function(func) {
   var self = this;
   var length = this._depSubscribers.push(func);
   return {
-    stop: function(){ self._depSubscribers.splice(length - 1); },
+    stop: function(){ self._depSubscribers.splice(length - 1, 1); },
   };
 };
 
@@ -49,13 +49,13 @@ Worona.prototype.waitForDeps = function(deps, timeout) {
   return new Promise(function(resolve, reject) {
     var left = deps.slice(0); // Clone array.
     left.forEach(function(dep, index){ // Remove each dependency already in the system.
-      if (!!self._deps[dep]) left.splice(index);
+      if (!!self._deps[dep]) left.splice(index, 1);
     }) ;
     if (left.length !== 0) {
       var subscription = self._addDepSubscriber(function(namespace) {
         var index = left.indexOf(namespace);
         if (index !== -1) {
-          left.splice(index); // Remove the item from the array.
+          left.splice(index, 1); // Remove the item from the array.
           if (left.length === 0) { // No more deps left. Yeah!
             subscription.stop();
             resolve(true);

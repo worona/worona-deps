@@ -272,6 +272,16 @@ test('waitForDeps - fail with timeout', function(t) {
   return promise;
 });
 
+test('waitForDeps - fail with timeout and only one package', function(t) {
+  t.plan(1);
+  var pkg = { name: 'pkg-ext', namespace: 'pkg' };
+  worona.addPackage(pkg);
+  const promise = worona.waitForDeps(['pkg', 'pkg2'], 1).catch(function(error) {
+    t.true(!!error);
+  });
+  return promise;
+});
+
 test('waitForDeps - don\'t fail with timeout', function(t) {
   t.plan(1);
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
