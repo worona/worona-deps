@@ -264,6 +264,20 @@ test('waitForDeps - complete with before and after', function(t) {
   return promise;
 });
 
+test('waitForDeps - complete with before and after reverse order', function(t) {
+  t.plan(1);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
+  var pkg3 = { name: 'pkg3-ext', namespace: 'pkg3' };
+  worona.addPackage(pkg2);
+  worona.addPackage(pkg3);
+  worona.addPackage(pkg1);
+  const promise = worona.waitForDeps(['pkg1', 'pkg2', 'pkg3'], 500).then(function(result) {
+    t.true(result);
+  });
+  return promise;
+});
+
 test('waitForDeps - fail with timeout', function(t) {
   t.plan(1);
   const promise = worona.waitForDeps(['pkg'], 1).catch(function(error) {
@@ -288,5 +302,12 @@ test('waitForDeps - don\'t fail with timeout', function(t) {
   const promise = worona.waitForDeps(['pkg'], 1)
     .then(function(result) { t.true(result); });
   worona.addPackage(pkg);
+  return promise;
+});
+
+test('waitForDeps - no dependencies', function(t) {
+  t.plan(1);
+  const promise = worona.waitForDeps([])
+    .then(function(result) { t.true(result); });
   return promise;
 });
