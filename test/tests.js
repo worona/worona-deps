@@ -329,3 +329,21 @@ test('waitForDeps - no dependencies', function(t) {
     .then(function(result) { t.true(result); });
   return promise;
 });
+
+test('waitForDeps - packages depending on other packages', function(t) {
+  t.plan(2);
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
+  var pkg3 = { name: 'pkg3-ext', namespace: 'pkg3' };
+  var dep1 = worona.waitForDeps(['pkg1', 'pkg2', 'pkg3'], 1)
+    .then(function(result) { t.true(result); });
+  var dep2 = worona.waitForDeps(['pkg1', 'pkg2', 'pkg3'], 1)
+    .then(function(result) { t.true(result); });
+  worona.packageDownloaded(pkg1);
+  worona.packageActivated('pkg1-ext');
+  worona.packageDownloaded(pkg2);
+  worona.packageActivated('pkg2-ext');
+  worona.packageDownloaded(pkg3);
+  worona.packageActivated('pkg3-ext');
+  return Promise.all([dep2, dep2]);
+});

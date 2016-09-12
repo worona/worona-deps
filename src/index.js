@@ -29,17 +29,20 @@ function checkWorona(variable) {
 // method.
 Worona.prototype._addDepSubscriber = function(func) {
   var self = this;
-  var length = this._depSubscribers.push(func);
+  this._depSubscribers.push(func);
   return {
-    stop: function(){ self._depSubscribers.splice(length - 1, 1); },
+    stop: function(){
+      var index = self._depSubscribers.indexOf(func);
+      if (index !== -1) self._depSubscribers.splice(index, 1); },
   };
 };
 
 // Private method used to notifiy subscribers of new dependencies added to the system.
 Worona.prototype._notifyDepSubscribers = function(namespace) {
-  this._depSubscribers.forEach(function(func) {
+  for (var i = this._depSubscribers.length - 1; i >= 0; i--) {
+    var func = this._depSubscribers[i];
     func(namespace);
-  });
+  }
 };
 
 // Accepts an array of dependencies and an optional timeout. Returns a promise which resolves
@@ -182,7 +185,7 @@ Worona.prototype.mock = function(deps) {
 
 var worona = new Worona();
 
-if (typeof window !== 'undefined') window.worona = worona;
+if (typeof window !== 'undefined' && !window.worona) { window.worona = worona; };
 
 module.exports = {
   default: worona,
