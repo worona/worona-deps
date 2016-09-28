@@ -3,6 +3,7 @@ var map = require('lodash/map');
 var Worona = function() {
   this._downloaded = {}; // Store the downloaded packages using their names.
   this._activated = {}; // Store references to the downloaded packages, using their namespaces.
+  this._development = []; // Store names of development packages.
   this._depSubscribers = []; // Stores callbacks subscribed to the deps.
   this.isTest = typeof window === 'undefined';
   this.isDev = !checkWorona('prod');
@@ -84,6 +85,16 @@ Worona.prototype.waitForDeps = function(deps, timeout) {
 // Used to add a downloaded package to the system.
 Worona.prototype.packageDownloaded = function(pkg) {
   this._downloaded[pkg.name] = pkg;
+};
+
+// Used to add a development package to the system.
+Worona.prototype.packageDevelopment = function(pkg) {
+  this._development.push(pkg.name);
+  this._downloaded[pkg.name] = pkg;
+};
+
+Worona.prototype.getDevelopmentPackages = function() {
+  return this._development;
 };
 
 // Used to activate a package to start using it in the dependencies: worona.dep().
@@ -193,6 +204,8 @@ module.exports = {
   Worona: Worona,
   packageDownloaded: worona.packageDownloaded.bind(worona),
   packageActivated: worona.packageActivated.bind(worona),
+  packageDevelopment: worona.packageDevelopment.bind(worona),
+  getDevelopmentPackages: worona.getDevelopmentPackages.bind(worona),
   getReducers: worona.getReducers.bind(worona),
   getLocales: worona.getLocales.bind(worona),
   getLocale: worona.getLocale.bind(worona),

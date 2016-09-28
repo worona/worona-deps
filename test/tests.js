@@ -347,3 +347,20 @@ test('waitForDeps - packages depending on other packages', function(t) {
   worona.packageActivated('pkg3-ext');
   return Promise.all([dep2, dep2]);
 });
+
+test('packageDevelopment', function(t) {
+  var pkg1 = { name: 'pkg1' };
+  worona.packageDevelopment(pkg1);
+  t.deepEqual(worona._development, ['pkg1']);
+  var pkg2 = { name: 'pkg2' };
+  worona.packageDevelopment(pkg2);
+  t.deepEqual(worona._development, ['pkg1', 'pkg2']);
+});
+
+test('getDevelopmentPackages', function(t) {
+  var pkg1 = { name: 'pkg1' };
+  var pkg2 = { name: 'pkg2' };
+  worona.packageDevelopment(pkg1);
+  worona.packageDevelopment(pkg2);
+  t.deepEqual(worona.getDevelopmentPackages(), ['pkg1', 'pkg2']);
+});
