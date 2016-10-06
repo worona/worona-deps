@@ -187,7 +187,7 @@ Worona.prototype.mock = function(deps) {
   for (var sub in deps) {
     mockedDeps[sub] = {};
     for (var subsub in deps[sub]) {
-      mockedDeps[sub][subsub] = function(){};
+      mockedDeps[sub][subsub] = function(){ return {}; };
     }
     deps[sub] = mockedDeps[sub];
   }

@@ -187,6 +187,14 @@ test('Mock dep object', function(t) {
   t.notThrows(function() { deps.libs.somelib });
 });
 
+test('Mock dep should return function which should return empty object', function(t) {
+  var deps = {
+    libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+  };
+  worona.mock(deps);
+  t.deepEqual(deps.libs.somelib(), {});
+});
+
 test('isTest', function(t) {
   t.true(worona.isTest);
   global.window = {}; // Add window to simulate the browser.
