@@ -184,12 +184,16 @@ Worona.prototype.dep = function() {
 // doing worona.mock(deps).
 Worona.prototype.mock = function(deps) {
   var mockedDeps = {};
-  for (var sub in deps) {
-    mockedDeps[sub] = {};
-    for (var subsub in deps[sub]) {
-      mockedDeps[sub][subsub] = function(){ return {}; };
+  for (var type in deps) {
+    mockedDeps[type] = {};
+    for (var func in deps[type]) {
+      mockedDeps[type][func] = (function(type, func) {
+        return function() {
+          return { type: type, func: func, args: Array.prototype.slice.call(arguments) };
+        }
+      })(type, func);
     }
-    deps[sub] = mockedDeps[sub];
+    deps[type] = mockedDeps[type];
   }
   return deps;
 }

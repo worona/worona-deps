@@ -187,12 +187,19 @@ test('Mock dep object', function(t) {
   t.notThrows(function() { deps.libs.somelib });
 });
 
-test('Mock dep should return function which should return empty object', function(t) {
+test('Mock dep functions should return objects with info of name and arguments', function(t) {
   var deps = {
+    libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+    libs2: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+  };
+  var deps2 = {
     libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
   };
   worona.mock(deps);
-  t.deepEqual(deps.libs.somelib(), {});
+  worona.mock(deps2);
+  t.deepEqual(deps.libs.somelib(123, '456'), deps2.libs.somelib(123, '456'));
+  t.notDeepEqual(deps.libs.somelib(123, '456'), deps2.libs.somelib(456, '123'));
+  t.notDeepEqual(deps.libs2.somelib(123, '456'), deps2.libs.somelib(123, '456'));
 });
 
 test('isTest', function(t) {
