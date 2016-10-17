@@ -90,6 +90,7 @@ test('Get locale, non existant', function(t) {
 });
 
 test('Get dependency level 1', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
   worona.packageDownloaded(pkg);
   worona.packageActivated('pkg-ext');
@@ -97,6 +98,7 @@ test('Get dependency level 1', function(t) {
 });
 
 test('Get dependency with replacement level 1', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', actions: { something: 1 } };
   worona.packageDownloaded(pkg1);
   worona.packageActivated('pkg1-ext');
@@ -108,6 +110,7 @@ test('Get dependency with replacement level 1', function(t) {
 });
 
 test('Get dependency level 2', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
   worona.packageDownloaded(pkg);
   worona.packageActivated('pkg-ext');
@@ -115,6 +118,7 @@ test('Get dependency level 2', function(t) {
 });
 
 test('Get dependency level 3', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: { more: 1 } } };
   worona.packageDownloaded(pkg);
   worona.packageActivated('pkg-ext');
@@ -122,28 +126,34 @@ test('Get dependency level 3', function(t) {
 });
 
 test('Throw dependency level 0, no package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   t.throws(function() { worona.dep() });
 });
 
 test('Throw dependency level 1, no package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   t.throws(function() { worona.dep('pkg') });
 });
 
 test('Throw dependency level 2, no package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   t.throws(function() { worona.dep('pkg', 'actions') });
 });
 
 test('Throw dependency level 3, no package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   t.throws(function() { worona.dep('pkg', 'actions', 'something') });
 });
 
 test('Throw dependency level 2, package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
   worona.packageDownloaded(pkg);
   t.throws(function() { worona.dep('pkg', 'actions') });
 });
 
 test('Throw dependency level 3, package', function(t) {
+  worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: {} };
   worona.packageDownloaded(pkg);
   t.throws(function() { worona.dep('pkg', 'actions', 'something') });
@@ -176,12 +186,12 @@ test('Mock dep object', function(t) {
     },
   };
 
+  worona.isTest = false;
   t.throws(function() { deps.libs.somelib });
   t.throws(function() { deps.libs.somelib });
   t.throws(function() { deps.libs.somelib });
 
-  worona.mock(deps);
-
+  worona.isTest = true;
   t.notThrows(function() { deps.libs.somelib });
   t.notThrows(function() { deps.libs.somelib });
   t.notThrows(function() { deps.libs.somelib });
@@ -189,14 +199,13 @@ test('Mock dep object', function(t) {
 
 test('Mock dep functions should return objects with info of name and arguments', function(t) {
   var deps = {
-    libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
-    libs2: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+    libs: { get somelib() { return worona.dep('pkg1', 'deps', 'libs'); } },
+    libs2: { get somelib() { return worona.dep('pkg2', 'deps', 'libs2'); } },
   };
   var deps2 = {
-    libs: { get somelib() { return worona.dep('some', 'fake', 'dep'); } },
+    libs: { get somelib() { return worona.dep('pkg1', 'deps', 'libs'); } },
   };
-  worona.mock(deps);
-  worona.mock(deps2);
+  worona.isTest = true; // Start mocking.
   t.deepEqual(deps.libs.somelib(123, '456'), deps2.libs.somelib(123, '456'));
   t.notDeepEqual(deps.libs.somelib(123, '456'), deps2.libs.somelib(456, '123'));
   t.notDeepEqual(deps.libs2.somelib(123, '456'), deps2.libs.somelib(123, '456'));
@@ -378,4 +387,17 @@ test('getDevelopmentPackages', function(t) {
   worona.packageDevelopment(pkg1);
   worona.packageDevelopment(pkg2);
   t.deepEqual(worona.getDevelopmentPackages(), ['pkg1', 'pkg2']);
+});
+
+test('getDeps', function(t) {
+  worona.isTest = false; // Avoid mocking.
+  var deps = {
+    libs: { get somelib() { return worona.dep('pkg1', 'fake', 'dep'); } },
+    types: {
+      get TYPE() { return worona.dep('pkg2', 'fake', 'dep'); },
+      get TYPE2() { return worona.dep('pkg3', 'fake', 'dep2'); },
+      get TYPE3() { return worona.dep('pkg3', 'fake', 'dep3'); },
+    },
+  };
+  t.deepEqual(worona.getDeps(deps), ['pkg1', 'pkg2', 'pkg3']);
 });

@@ -12,6 +12,7 @@ var Worona = function() {
   this.isRemote = checkWorona('remote');
   this.isWeb = !checkGlobal('cordova');
   this.isCordova = checkGlobal('cordova');
+  this.isGetDeps = false;
 }
 
 function checkGlobal(variable) {
@@ -171,6 +172,22 @@ Worona.prototype.dep = function() {
   var args = Array.prototype.slice.call(arguments);
   var namespace = args[0];
   var propName = args[1];
+  var funcName = args[2];
+
+  // If we are simply retrieving deps, return the namespace.
+  if (this.isGetDeps) {
+    return namespace;
+
+  // If we are doing a test, retrieve a mock.
+  } else if (this.isTest) {
+    return (function(type, func) {
+      return function() {
+        return { type: type, func: func, args: Array.prototype.slice.call(arguments) };
+      }
+    })(propName, funcName);
+  }
+
+  // If we are retrieving a dependency, retrive it from _activated.
   checkString(namespace);
   checkPackage(namespace, this._activated);
   if (typeof propName === 'undefined') {
@@ -178,6 +195,20 @@ Worona.prototype.dep = function() {
   }
   var nextArgs = args.slice(2);
   return nextDep(namespace, this._activated[namespace], propName, nextArgs);
+}
+
+// Used to get all dependencies from a module.
+Worona.prototype.getDeps = function(deps) {
+  this.isGetDeps = true;
+  var depsArr = [];
+  for (var type in deps) {
+    for (var dep in deps[type]) {
+      var namespace = deps[type][dep];
+      if (depsArr.indexOf(namespace) === -1) depsArr.push(namespace);
+    }
+  }
+  this.isGetDeps = false;
+  return depsArr;
 }
 
 // Used to mock a dependency when unit testing modules with dependencies. It is as simple as
@@ -215,6 +246,7 @@ module.exports = {
   getLocale: worona.getLocale.bind(worona),
   getSagas: worona.getSagas.bind(worona),
   waitForDeps: worona.waitForDeps.bind(worona),
+  getDeps: worona.getDeps.bind(worona),
   dep: worona.dep.bind(worona),
   mock: worona.mock,
   isTest: worona.isTest,
