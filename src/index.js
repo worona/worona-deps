@@ -198,8 +198,9 @@ Worona.prototype.dep = function() {
 }
 
 // Used to get all dependencies from a module.
-Worona.prototype.getDeps = function(deps) {
+Worona.prototype.getDeps = function(name) {
   this.isGetDeps = true;
+  var deps = this._downloaded[name].deps || {};
   var depsArr = [];
   for (var type in deps) {
     for (var dep in deps[type]) {

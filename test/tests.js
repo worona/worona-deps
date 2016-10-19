@@ -391,13 +391,16 @@ test('getDevelopmentPackages', function(t) {
 
 test('getDeps', function(t) {
   worona.isTest = false; // Avoid mocking.
-  var deps = {
-    libs: { get somelib() { return worona.dep('pkg1', 'fake', 'dep'); } },
-    types: {
-      get TYPE() { return worona.dep('pkg2', 'fake', 'dep'); },
-      get TYPE2() { return worona.dep('pkg3', 'fake', 'dep2'); },
-      get TYPE3() { return worona.dep('pkg3', 'fake', 'dep3'); },
-    },
-  };
-  t.deepEqual(worona.getDeps(deps), ['pkg1', 'pkg2', 'pkg3']);
+  var pkg = {
+    name: 'pkg1',
+    deps: {
+      libs: { get somelib() { return worona.dep('pkg1', 'fake', 'dep'); } },
+      types: {
+        get TYPE() { return worona.dep('pkg2', 'fake', 'dep'); },
+        get TYPE2() { return worona.dep('pkg3', 'fake', 'dep2'); },
+        get TYPE3() { return worona.dep('pkg3', 'fake', 'dep3'); },
+      },
+  } };
+  worona.packageDownloaded(pkg);
+  t.deepEqual(worona.getDeps('pkg1'), ['pkg1', 'pkg2', 'pkg3']);
 });
