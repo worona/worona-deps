@@ -123,9 +123,9 @@ Worona.prototype.getLocales = function(lng) {
 }
 
 // Used to retrieve the locale of a namespace and language.
-Worona.prototype.getLocale = function(name, lng) {
-  return this._downloaded[name] && typeof this._downloaded[name].locales === 'function' ?
-    this._downloaded[name].locales(lng) : null;
+Worona.prototype.getLocale = function(ns, lng) {
+  return this._activated[ns] && typeof this._activated[ns].locales === 'function' ?
+    this._activated[ns].locales(lng) : null;
 }
 
 // Used to retrieve the root saga for a namespace.

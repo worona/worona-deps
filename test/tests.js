@@ -78,15 +78,17 @@ test('Get locale', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
   worona.packageDownloaded(pkg1);
-  t.deepEqual(worona.getLocale('pkg1-ext', 'test'), pkg1.locales('test'));
+  worona.packageActivated('pkg1-ext');
+  t.deepEqual(worona.getLocale('pkg1', 'test'), pkg1.locales('test'));
   worona.packageDownloaded(pkg2);
-  t.deepEqual(worona.getLocale('pkg2-ext', 'test'), pkg2.locales('test'));
+  worona.packageActivated('pkg2-ext');
+  t.deepEqual(worona.getLocale('pkg2', 'test'), pkg2.locales('test'));
 });
 
 test('Get locale, non existant', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
   worona.packageDownloaded(pkg1);
-  t.deepEqual(worona.getLocale('pkg1-ext', 'test'), null);
+  t.deepEqual(worona.getLocale('pkg1', 'test'), null);
 });
 
 test('Get dependency level 1', function(t) {
