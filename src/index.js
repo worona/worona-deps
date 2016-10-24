@@ -95,7 +95,13 @@ Worona.prototype.packageDevelopment = function(pkg) {
 };
 
 Worona.prototype.getDevelopmentPackages = function() {
-  return this._development;
+  var self = this;
+  return self._development.map(function(pkg) {
+    return {
+      name: self._downloaded[pkg].name,
+      namespace: self._downloaded[pkg].namespace,
+    };
+  });
 };
 
 // Used to activate a package to start using it in the dependencies: worona.dep().

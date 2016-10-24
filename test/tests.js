@@ -383,12 +383,16 @@ test('packageDevelopment', function(t) {
   t.deepEqual(worona._development, ['pkg1', 'pkg2']);
 });
 
-test('getDevelopmentPackages', function(t) {
-  var pkg1 = { name: 'pkg1' };
-  var pkg2 = { name: 'pkg2' };
+test('getDevelopmentPackages empty', function(t) {
+  t.deepEqual(worona.getDevelopmentPackages(), []);
+});
+
+test('getDevelopmentPackages not empty', function(t) {
+  var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
+  var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
   worona.packageDevelopment(pkg1);
   worona.packageDevelopment(pkg2);
-  t.deepEqual(worona.getDevelopmentPackages(), ['pkg1', 'pkg2']);
+  t.deepEqual(worona.getDevelopmentPackages(), [ pkg1, pkg2 ]);
 });
 
 test('getDeps', function(t) {
