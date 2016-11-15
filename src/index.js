@@ -1,4 +1,7 @@
 var map = require('lodash/map');
+var flow = require('lodash/fp/flow');
+var keyBy = require('lodash/fp/keyBy');
+var mapValues = require('lodash/fp/mapValues');
 
 var Worona = function() {
   this._downloaded = {}; // Store the downloaded packages using their names.
@@ -96,12 +99,15 @@ Worona.prototype.packageDevelopment = function(pkg) {
 
 Worona.prototype.getDevelopmentPackages = function() {
   var self = this;
-  return self._development.map(function(pkg) {
+  return flow(
+   keyBy(function(item) { return item; }),
+   mapValues(function(item) {
     return {
-      name: self._downloaded[pkg].name,
-      namespace: self._downloaded[pkg].namespace,
+      name: self._downloaded[item].name,
+      namespace: self._downloaded[item].namespace,
     };
-  });
+   })
+  )(self._development);
 };
 
 // Used to activate a package to start using it in the dependencies: worona.dep().
