@@ -105,6 +105,7 @@ Worona.prototype.getDevelopmentPackages = function() {
     return {
       name: self._downloaded[item].name,
       namespace: self._downloaded[item].namespace,
+      woronaInfo: self._downloaded[item].woronaInfo,
     };
    })
   )(self._development);
