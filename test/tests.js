@@ -19,6 +19,15 @@ test('Add package', function(t) {
   t.is(worona._activated['pkg'], pkg);
 });
 
+test.only('Add package with service', function(t) {
+  var pkg = { name: 'pkg-ext', namespace: { dashboard: 'pkgDashboard', app: 'pkgApp'}, some: 'content' };
+  worona.packageDownloaded(pkg);
+  t.is(worona._downloaded['pkg-ext'], pkg);
+  worona.packageActivated('pkg-ext', 'dashboard');
+  t.is(worona._activated['pkgDashboard'], pkg);
+  t.is(worona._activated['pkgDashboard'].namespace, 'pkgDashboard');
+});
+
 test('Replace package', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', some: 'content' };
   worona.packageDownloaded(pkg1);

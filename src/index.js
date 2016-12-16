@@ -115,8 +115,9 @@ Worona.prototype.getDevelopmentPackages = function() {
 // Please not that if a package is downloaded and no other package with the same namespace is
 // activated yet, it will be available using worona.dep() even if you don't use .packageActivated.
 // This helps solving activation order and circular dependencies.
-Worona.prototype.packageActivated = function(name) {
+Worona.prototype.packageActivated = function(name, service) {
   var pkg = this._downloaded[name];
+  pkg.namespace = typeof pkg.namespace === 'object' ? pkg.namespace[service] : pkg.namespace;
   this._activated[pkg.namespace] = pkg;
   this._notifyDepSubscribers(pkg.namespace);
 }
