@@ -87,14 +87,16 @@ Worona.prototype.waitForDeps = function(deps, timeout) {
 }
 
 // Used to add a downloaded package to the system.
-Worona.prototype.packageDownloaded = function(pkg) {
+Worona.prototype.packageDownloaded = function(pkg, name, namespace) {
+  pkg.name = name;
+  pkg.namespace = namespace;
   this._downloaded[pkg.name] = pkg;
 };
 
 // Used to add a development package to the system.
-Worona.prototype.packageDevelopment = function(pkg) {
-  this._development.push(pkg.name);
-  this._downloaded[pkg.name] = pkg;
+Worona.prototype.packageDevelopment = function(pkg, name, namespace) {
+  this._development.push(name);
+  this.packageDownloaded(pkg, name, namespace);
 };
 
 Worona.prototype.getDevelopmentPackages = function() {

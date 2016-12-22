@@ -13,7 +13,7 @@ test.afterEach(function() {
 
 test('Add package', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', some: 'content' };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.is(worona._downloaded['pkg-ext'], pkg);
   worona.packageActivated('pkg-ext');
   t.is(worona._activated['pkg'], pkg);
@@ -21,9 +21,9 @@ test('Add package', function(t) {
 
 test('Replace package', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', some: 'content' };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg', some: 'content' };
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg1-ext');
   t.is(worona._activated['pkg'], pkg1);
   worona.packageActivated('pkg2-ext');
@@ -33,18 +33,18 @@ test('Replace package', function(t) {
 test('Get reducers', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', reducers: { someRed: 22, default: () => 2 } };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   t.is(worona.getReducers('pkg1-ext'), 1);
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   t.is(worona.getReducers('pkg2-ext'), 2);
 });
 
 test('Get reducers. Packages without reducers', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', reducers: { someRed: 11, default: () => 1 } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   t.is(worona.getReducers('pkg1-ext'), 1);
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   t.is(worona.getReducers('pkg2-ext'), null);
 });
 
@@ -55,10 +55,10 @@ test('Get locales. Empty locales', function(t) {
 test('Get locales', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg2-ext');
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test'), pkg2.locales('test')]);
 });
@@ -66,10 +66,10 @@ test('Get locales', function(t) {
 test('Get locales. Packages without locales', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg2-ext');
   t.deepEqual(worona.getLocales('test'), [pkg1.locales('test')]);
 });
@@ -77,24 +77,24 @@ test('Get locales. Packages without locales', function(t) {
 test('Get locale', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1', locales: function(lang) { return lang; } };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', locales: function(lang) { return lang; } };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
   t.deepEqual(worona.getLocale('pkg1', 'test'), pkg1.locales('test'));
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg2-ext');
   t.deepEqual(worona.getLocale('pkg2', 'test'), pkg2.locales('test'));
 });
 
 test('Get locale, non existant', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   t.deepEqual(worona.getLocale('pkg1', 'test'), null);
 });
 
 test('Get dependency level 1', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   t.is(worona.dep('pkg', 'actions'), pkg.actions);
 });
@@ -102,10 +102,10 @@ test('Get dependency level 1', function(t) {
 test('Get dependency with replacement level 1', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', actions: { something: 1 } };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg', actions: { something: 1 } };
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   t.is(worona.dep('pkg', 'actions'), pkg1.actions);
   worona.packageActivated('pkg2-ext');
   t.is(worona.dep('pkg', 'actions'), pkg2.actions);
@@ -114,7 +114,7 @@ test('Get dependency with replacement level 1', function(t) {
 test('Get dependency level 2', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: 1 } };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   t.is(worona.dep('pkg', 'actions', 'something'), pkg.actions.something);
 });
@@ -122,7 +122,7 @@ test('Get dependency level 2', function(t) {
 test('Get dependency level 3', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: { something: { more: 1 } } };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   t.is(worona.dep('pkg', 'actions', 'something', 'more'), pkg.actions.something.more);
 });
@@ -150,32 +150,32 @@ test('Throw dependency level 3, no package', function(t) {
 test('Throw dependency level 2, package', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.throws(function() { worona.dep('pkg', 'actions') });
 });
 
 test('Throw dependency level 3, package', function(t) {
   worona.isTest = false; // Avoid mocking.
   var pkg = { name: 'pkg-ext', namespace: 'pkg', actions: {} };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.throws(function() { worona.dep('pkg', 'actions', 'something') });
 });
 
 test('Get sagas, no sagas', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.false(worona.getSagas('pkg-ext'));
 })
 
 test('Get sagas, no default', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: {} };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.false(worona.getSagas('pkg-ext'));
 })
 
 test('Get sagas', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', sagas: { default: {} } };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.is(worona.getSagas('pkg-ext'), pkg.sagas.default);
 })
 
@@ -269,7 +269,7 @@ test('isCordova', function(t) {
 test('waitForDeps - complete before calling', function(t) {
   t.plan(1);
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   var promise = worona.waitForDeps(['pkg'], 1).then(function(result) {
     t.true(result);
@@ -283,7 +283,7 @@ test('waitForDeps - complete after calling', function(t) {
   var promise = worona.waitForDeps(['pkg'], 1).then(function(result) {
     t.true(result);
   });
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   return promise;
 });
@@ -293,9 +293,9 @@ test('waitForDeps - complete with before and after reverse order', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
   var pkg3 = { name: 'pkg3-ext', namespace: 'pkg3' };
-  worona.packageDownloaded(pkg2);
-  worona.packageDownloaded(pkg3);
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
+  worona.packageDownloaded(pkg3, pkg3.name, pkg3.namespace);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg2-ext');
   worona.packageActivated('pkg3-ext');
   worona.packageActivated('pkg1-ext');
@@ -318,12 +318,12 @@ test('waitForDeps - complete with before and after', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2' };
   var pkg3 = { name: 'pkg3-ext', namespace: 'pkg3' };
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
   var promise = worona.waitForDeps(['pkg1', 'pkg2', 'pkg3'], 1)
     .then(function(result) { t.true(result); });
-  worona.packageDownloaded(pkg2);
-  worona.packageDownloaded(pkg3);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
+  worona.packageDownloaded(pkg3, pkg3.name, pkg3.namespace);
   worona.packageActivated('pkg2-ext');
   worona.packageActivated('pkg3-ext');
   return promise;
@@ -332,7 +332,7 @@ test('waitForDeps - complete with before and after', function(t) {
 test('waitForDeps - fail with timeout and only one package', function(t) {
   t.plan(1);
   var pkg3 = { name: 'pkg3-ext', namespace: 'pkg3' };
-  worona.packageDownloaded(pkg3);
+  worona.packageDownloaded(pkg3, pkg3.name, pkg3.namespace);
   var promise = worona.waitForDeps(['pkg3', 'pkg4'], 1).catch(function(error) {
     t.true(!!error);
   });
@@ -344,7 +344,7 @@ test('waitForDeps - don\'t fail with timeout', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };
   var promise = worona.waitForDeps(['pkg'], 1)
     .then(function(result) { t.true(result); });
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   worona.packageActivated('pkg-ext');
   return promise;
 });
@@ -365,11 +365,11 @@ test('waitForDeps - packages depending on other packages', function(t) {
     .then(function(result) { t.true(result); });
   var dep2 = worona.waitForDeps(['pkg1', 'pkg2', 'pkg3'], 1)
     .then(function(result) { t.true(result); });
-  worona.packageDownloaded(pkg1);
+  worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);
   worona.packageActivated('pkg1-ext');
-  worona.packageDownloaded(pkg2);
+  worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg2-ext');
-  worona.packageDownloaded(pkg3);
+  worona.packageDownloaded(pkg3, pkg3.name, pkg3.namespace);
   worona.packageActivated('pkg3-ext');
   return Promise.all([dep2, dep2]);
 });
@@ -390,8 +390,8 @@ test('getDevelopmentPackages empty', function(t) {
 test('getDevelopmentPackages not empty', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg1' , woronaInfo: 'some info' };
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg2', woronaInfo: 'some info', otherInfo: 'other' };
-  worona.packageDevelopment(pkg1);
-  worona.packageDevelopment(pkg2);
+  worona.packageDevelopment(pkg1, pkg1.name, pkg1.namespace);
+  worona.packageDevelopment(pkg2, pkg2.name, pkg2.namespace);
   t.deepEqual(worona.getDevelopmentPackages(), {
     'pkg1-ext': { name: 'pkg1-ext', namespace: 'pkg1', woronaInfo: 'some info' },
     'pkg2-ext': { name: 'pkg2-ext', namespace: 'pkg2', woronaInfo: 'some info' },
@@ -410,6 +410,6 @@ test('getDeps', function(t) {
         get TYPE3() { return worona.dep('pkg3', 'fake', 'dep3'); },
       },
   } };
-  worona.packageDownloaded(pkg);
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
   t.deepEqual(worona.getDeps('pkg1'), ['pkg1', 'pkg2', 'pkg3']);
 });
