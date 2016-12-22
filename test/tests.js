@@ -14,9 +14,9 @@ test.afterEach(function() {
 test('Add package', function(t) {
   var pkg = { name: 'pkg-ext', namespace: 'pkg', some: 'content' };
   worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
-  t.is(worona._downloaded['pkg-ext'], pkg);
+  t.deepEqual(worona._downloaded['pkg-ext'], pkg);
   worona.packageActivated('pkg-ext');
-  t.is(worona._activated['pkg'], pkg);
+  t.deepEqual(worona._activated['pkg'], pkg);
 });
 
 test('Replace package', function(t) {
@@ -25,9 +25,9 @@ test('Replace package', function(t) {
   var pkg2 = { name: 'pkg2-ext', namespace: 'pkg', some: 'content' };
   worona.packageDownloaded(pkg2, pkg2.name, pkg2.namespace);
   worona.packageActivated('pkg1-ext');
-  t.is(worona._activated['pkg'], pkg1);
+  t.deepEqual(worona._activated['pkg'], pkg1);
   worona.packageActivated('pkg2-ext');
-  t.is(worona._activated['pkg'], pkg2);
+  t.deepEqual(worona._activated['pkg'], pkg2);
 });
 
 test('Get reducers', function(t) {

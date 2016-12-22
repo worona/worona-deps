@@ -1,4 +1,5 @@
 var map = require('lodash/map');
+var extend = require('lodash/extend');
 var flow = require('lodash/fp/flow');
 var keyBy = require('lodash/fp/keyBy');
 var mapValues = require('lodash/fp/mapValues');
@@ -88,9 +89,8 @@ Worona.prototype.waitForDeps = function(deps, timeout) {
 
 // Used to add a downloaded package to the system.
 Worona.prototype.packageDownloaded = function(pkg, name, namespace) {
-  pkg.name = name;
-  pkg.namespace = namespace;
-  this._downloaded[pkg.name] = pkg;
+  var newPkg = extend({}, pkg, { name: name, namespace: namespace });
+  this._downloaded[name] = newPkg;
 };
 
 // Used to add a development package to the system.
