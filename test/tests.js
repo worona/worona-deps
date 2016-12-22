@@ -375,11 +375,11 @@ test('waitForDeps - packages depending on other packages', function(t) {
 });
 
 test('packageDevelopment', function(t) {
-  var pkg1 = { name: 'pkg1' };
-  worona.packageDevelopment(pkg1);
+  var pkg1 = { name: 'pkg1', namespace: 'dev' };
+  worona.packageDevelopment(pkg1, pkg1.name, pkg1.namespace);
   t.deepEqual(worona._development, ['pkg1']);
-  var pkg2 = { name: 'pkg2' };
-  worona.packageDevelopment(pkg2);
+  var pkg2 = { name: 'pkg2', namespace: 'dev' };
+  worona.packageDevelopment(pkg2, pkg2.name, pkg2.namespace);
   t.deepEqual(worona._development, ['pkg1', 'pkg2']);
 });
 
