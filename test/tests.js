@@ -266,6 +266,20 @@ test('isCordova', function(t) {
   t.true(otherWorona.isCordova);
 });
 
+test('isAndroid', function(t) {
+  t.false(worona.isAndroid); // False by default
+  global.window = { cordova: {}, device: { platform: 'Android' } };
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isCordova.
+  t.true(otherWorona.isAndroid);
+});
+
+test('isIos', function(t) {
+  t.false(worona.isIos); // False by default
+  global.window = { cordova: {}, device: { platform: 'iOS' } };
+  var otherWorona = new Worona(); // Create a new worona to reevaluate isCordova.
+  t.true(otherWorona.isIos);
+});
+
 test('waitForDeps - complete before calling', function(t) {
   t.plan(1);
   var pkg = { name: 'pkg-ext', namespace: 'pkg' };

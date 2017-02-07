@@ -16,6 +16,8 @@ var Worona = function() {
   this.isRemote = checkWorona('remote');
   this.isWeb = !checkGlobal('cordova');
   this.isCordova = checkGlobal('cordova');
+  this.isIos = checkGlobal('cordova') && checkGlobal('device') && window.device.platform === 'iOS';
+  this.isAndroid = checkGlobal('cordova') && checkGlobal('device') && window.device.platform === 'Android';
   this.isGetDeps = false;
 }
 
@@ -272,4 +274,6 @@ module.exports = {
   isRemote: worona.isRemote,
   isWeb: worona.isWeb,
   isCordova: worona.isCordova,
+  isCordova: worona.isIos,
+  isCordova: worona.isAndroid,
 };
