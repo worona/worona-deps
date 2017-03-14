@@ -263,6 +263,7 @@ module.exports = {
   Worona: Worona,
   packageDownloaded: worona.packageDownloaded.bind(worona),
   packageActivated: worona.packageActivated.bind(worona),
+  packageDeactivated: worona.packageDeactivated.bind(worona),
   packageDevelopment: worona.packageDevelopment.bind(worona),
   getDevelopmentPackages: worona.getDevelopmentPackages.bind(worona),
   getReducers: worona.getReducers.bind(worona),
