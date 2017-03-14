@@ -19,6 +19,16 @@ test('Add package', function(t) {
   t.deepEqual(worona._activated['pkg'], pkg);
 });
 
+test('Remove package', function(t) {
+  var pkg = { name: 'pkg-ext', namespace: 'pkg', some: 'content' };
+  worona.packageDownloaded(pkg, pkg.name, pkg.namespace);
+  t.deepEqual(worona._downloaded['pkg-ext'], pkg);
+  worona.packageActivated('pkg-ext');
+  t.deepEqual(worona._activated['pkg'], pkg);
+  worona.packageDeactivated('pkg-ext');
+  t.deepEqual(worona._activated['pkg'], undefined);
+});
+
 test('Replace package', function(t) {
   var pkg1 = { name: 'pkg1-ext', namespace: 'pkg', some: 'content' };
   worona.packageDownloaded(pkg1, pkg1.name, pkg1.namespace);

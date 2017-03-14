@@ -125,6 +125,12 @@ Worona.prototype.packageActivated = function(name) {
   this._notifyDepSubscribers(pkg.namespace);
 }
 
+// Used to deactivate a package.
+Worona.prototype.packageDeactivated = function(name) {
+  var pkg = this._downloaded[name];
+  delete this._activated[pkg.namespace];
+}
+
 // Used to retrieve the root reducer of a specific namespace.
 Worona.prototype.getReducers = function(name) {
   return this._downloaded[name].reducers && this._downloaded[name].reducers.default() || null;
