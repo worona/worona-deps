@@ -281,6 +281,6 @@ module.exports = {
   isRemote: worona.isRemote,
   isWeb: worona.isWeb,
   isCordova: worona.isCordova,
-  isCordova: worona.isIos,
-  isCordova: worona.isAndroid,
+  isIos: worona.isIos,
+  isAndroid: worona.isAndroid,
 };
