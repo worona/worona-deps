@@ -37,7 +37,14 @@ test('empty packages throw', t => {
   );
 });
 
-test('dependencies can be retrieved', t => {
+test('dependencies of objects can be retrieved', t => {
+  const fakeModule = { reducers: { one: 1, two: 2 }, Theme: 3 };
+  woronaTest.addPackage({ namespace: 'fakeModule', module: fakeModule });
+  const dep = woronaTest.dep('fakeModule', 'Theme');
+  t.is(dep, 3);
+});
+
+test('dependencies of properties can be retrieved', t => {
   const fakeModule = { reducers: { one: 1, two: 2 }, actions: { three: 3, four: 4 } };
   woronaTest.addPackage({ namespace: 'fakeModule', module: fakeModule });
   const dep1 = woronaTest.dep('fakeModule', 'reducers', 'one');
@@ -49,6 +56,6 @@ test('dependencies can be retrieved', t => {
 test('non-existent dependencies throw', t => {
   t.throws(
     () => woronaTest.dep('fakeModule', 'reducers', 'one'),
-    "Error retrieving dependency: 'fakeModule', 'reducers', 'one'"
+    "Error retrieving dependency: 'fakeModule', 'reducers', 'one'."
   );
 });

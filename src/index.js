@@ -9,11 +9,13 @@ export class Worona {
     this.packages[namespace] = module;
   }
 
-  dep(namespace, type, func) {
+  dep(namespace, obj, prop) {
     try {
-      return this.packages[namespace][type][func];
+      return prop ? this.packages[namespace][obj][prop] : this.packages[namespace][obj];
     } catch (error) {
-      throw new Error(`Error retrieving dependency: '${namespace}', '${type}', '${func}'`);
+      throw new Error(
+        `Error retrieving dependency: '${namespace}', '${obj}'${prop ? `, '${prop}'` : ''}.`
+      );
     }
   }
 }
