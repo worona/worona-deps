@@ -25,6 +25,18 @@ test('packages can be added', t => {
   t.is(woronaTest.packages.fakeModule, fakeModule);
 });
 
+test('empty packages throw', t => {
+  const fakeModule = {};
+  t.throws(
+    () => woronaTest.addPackage({ namespace: 'fakeModule' }),
+    'Package not added because namespace or module is missing.'
+  );
+  t.throws(
+    () => woronaTest.addPackage({ module: fakeModule }),
+    'Package not added because namespace or module is missing.'
+  );
+});
+
 test('dependencies can be retrieved', t => {
   const fakeModule = { reducers: { one: 1, two: 2 }, actions: { three: 3, four: 4 } };
   woronaTest.addPackage({ namespace: 'fakeModule', module: fakeModule });
